@@ -1,118 +1,110 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import * as React from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  Text,
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Dimensions,
 } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+function HomeScreen() {
+  return <VideoPlayer />;
+}
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const Stack = createNativeStackNavigator();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function RootStack() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} />
+    </Stack.Navigator>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+export default function App() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <NavigationContainer>
+      <RootStack />
+    </NavigationContainer>
+  );
+}
+
+import Video from 'react-native-video';
+
+const VideoPlayer = () => {
+  const [showVideo, setShowVideo] = React.useState(true);
+  return (
+    <SafeAreaView style={styles.backgroundStyle}>
+      {showVideo && (
+        <FlatList
+          data={[
+            'https://www.ikea.com/pvid/0774521_fe000083.mp4',
+            'https://www.ikea.com/pvid/0774521_fe000083.mp4',
+          ]}
+          renderItem={({item}) => {
+            return (
+              <View
+                style={{
+                  width: Dimensions.get('window').width,
+                  height: Dimensions.get('window').width,
+                }}>
+                <Video
+                  resizeMode="contain"
+                  ignoreSilentSwitch={'obey'}
+                  controls
+                  volume={0}
+                  style={styles.videoStyle}
+                  source={{
+                    uri: item,
+                  }}
+                />
+              </View>
+            );
+          }}
+          keyExtractor={(__, index) => index.toString()}
+          scrollEventThrottle={16}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainerStyle}
+          pagingEnabled
+          decelerationRate="normal"
+          disableIntervalMomentum
+        />
+      )}
+      <Pressable
+        style={styles.buttonStyle}
+        onPress={() => setShowVideo(!showVideo)}>
+        <Text>Toggle Video</Text>
+      </Pressable>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  backgroundStyle: {
+    backgroundColor: 'orange',
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  videoStyle: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    backgroundColor: 'gray',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  buttonStyle: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 70,
+    borderRadius: 10,
   },
-  highlight: {
-    fontWeight: '700',
+  contentContainerStyle: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-
-export default App;
