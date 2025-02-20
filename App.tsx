@@ -20,7 +20,14 @@ const Stack = createNativeStackNavigator();
 function RootStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          // headerShown: false, // When headerShown is false, video works fine
+          headerShown: true, // When headerShown is true, video bug occurs
+        }}
+      />
     </Stack.Navigator>
   );
 }
